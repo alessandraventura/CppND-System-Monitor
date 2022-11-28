@@ -1,0 +1,3 @@
+/home/alessandra/UdacityClasses/CppND-System-Monitor/build/CMakeFiles/monitor.dir
+/home/alessandra/UdacityClasses/CppND-System-Monitor/build/CMakeFiles/edit_cache.dir
+/home/alessandra/UdacityClasses/CppND-System-Monitor/build/CMakeFiles/rebuild_cache.dir

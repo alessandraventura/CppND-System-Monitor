@@ -236,7 +236,7 @@ std::string LinuxParser::Command(int pid) {
   return line;
 }
 
-// QUESTION: Read and return the memory used by a process
+// Read and return the memory used by a process
 std::string LinuxParser::Ram(int pid) { 
   std::string line, key, value, unit;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatusFilename);
@@ -245,7 +245,7 @@ std::string LinuxParser::Ram(int pid) {
       std::istringstream linestream(line);
       while (linestream >> key >> value >> unit) {
         if (key == "VmSize:") {
-          return std::to_string(stol(value)*1000);
+          return std::to_string(stol(value)/1024);
         }
       }
     }

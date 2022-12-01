@@ -1,5 +1,4 @@
 #include <cstddef>
-#include <iostream>
 #include <set>
 #include <string>
 #include <unistd.h>
@@ -9,10 +8,12 @@
 #include "process.h"
 #include "processor.h"
 #include "system.h"
+#include <iostream>
 
-using std::set;
-using std::size_t;
-/*
+/*You need to complete the mentioned TODOs in order to satisfy the rubric
+criteria "The student will be able to extract and display basic data about the
+system."
+
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
 
@@ -21,11 +22,10 @@ Processor &System::Cpu() { return cpu_; }
 
 // Return a container composed of the system's processes
 std::vector<Process> &System::Processes() {
-  // auto pids = LinuxParser::Pids();
-  // for (int i = 0; i < pids.size(); i++) {
-  //   // std::cout << i << std::endl;
-  //   // processes_.emplace_back(Process(i));
-  // }
+  auto pids = LinuxParser::Pids();
+  for (auto &i : pids) {
+    processes_.emplace_back(Process(i));
+  }
   return processes_;
 }
 

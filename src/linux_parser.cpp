@@ -68,7 +68,7 @@ std::vector<int> LinuxParser::Pids() {
 float LinuxParser::MemoryUtilization() {
   std::string line;
   std::string key;
-  float value, mem_total, mem_free, mem_available, mem_used;
+  float value, mem_total, mem_free, mem_available;
   std::ifstream filestream(kProcDirectory + kMeminfoFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
@@ -105,7 +105,7 @@ long LinuxParser::UpTime() {
 std::vector<std::string> LinuxParser::CpuUtilization() {
   std::vector<std::string> jiffies;
   std::string line, cpu, value;
-  std::ifstream filestream(kProcDirectory + kCpuinfoFilename);
+  std::ifstream filestream(kProcDirectory + kStatFilename);
   if (filestream.is_open()) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
@@ -124,44 +124,86 @@ long LinuxParser::Jiffies() { return ActiveJiffies() + IdleJiffies(); }
 
 // Read and return the number of active jiffies for a PID
 long LinuxParser::ActiveJiffies(int pid) {
-  std::string line;
-  std::vector<long> key;
-  long active_jiffies = 0, value = 0;
-  std::ifstream filestream(kProcDirectory + std::to_string(pid) +
-                           kStatFilename);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::istringstream linestream(line);
-      while (linestream >> value) {
-        key.emplace_back(value);
-      }
+  long totaltime;
+  long utime = 0, stime = 0, cutime = 0, cstime = 0;
+  std::string line, value;
+  std::vector<std::string> values;
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    while (linestream >> value) {
+      values.push_back(value);
     }
-
-    for (int i = 13; i < 17; i++) {
-      active_jiffies += key.at(i);
-    }
+    if (std::all_of(values[13].begin(), values[13].end(), isdigit))
+      utime = std::stol(values[13]);
+    if (std::all_of(values[14].begin(), values[14].end(), isdigit))
+      stime = std::stol(values[14]);
+    if (std::all_of(values[15].begin(), values[15].end(), isdigit))
+      cutime = std::stol(values[15]);
+    if (std::all_of(values[16].begin(), values[16].end(), isdigit))
+      cstime = std::stol(values[16]);
   }
-  return active_jiffies;
+  totaltime = utime + stime + cutime + cstime;
+  return totaltime / sysconf(_SC_CLK_TCK);
 }
 
 // Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
-  std::vector<std::string> active_jiffies = CpuUtilization();
+  std::vector<std::string> jiffies = CpuUtilization();
+  long total_jiffies = 0;
 
-  return 0; // stol(active_jiffies.at(CPUStates::kUser_)) +
-            // stol(active_jiffies.at(CPUStates::kNice_)) +
-            // stol(active_jiffies.at(CPUStates::kSystem_)) +
-            // stol(active_jiffies.at(CPUStates::kIRQ_)) +
-            // stol(active_jiffies.at(CPUStates::kSoftIRQ_)) +
-            // stol(active_jiffies.at(CPUStates::kSteal_));
+  if (CPUStates::kUser_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kUser_).begin(),
+                  jiffies.at(CPUStates::kUser_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kUser_));
+  }
+  if (CPUStates::kNice_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kNice_).begin(),
+                  jiffies.at(CPUStates::kNice_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kNice_));
+  }
+  if (CPUStates::kSystem_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kSystem_).begin(),
+                  jiffies.at(CPUStates::kSystem_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kSystem_));
+  }
+  if (CPUStates::kIRQ_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kIRQ_).begin(),
+                  jiffies.at(CPUStates::kIRQ_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kIRQ_));
+  }
+  if (CPUStates::kSoftIRQ_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kSoftIRQ_).begin(),
+                  jiffies.at(CPUStates::kSoftIRQ_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kSoftIRQ_));
+  }
+  if (CPUStates::kSteal_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kSteal_).begin(),
+                  jiffies.at(CPUStates::kSteal_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kSteal_));
+  }
+
+  return total_jiffies / sysconf(_SC_CLK_TCK);
 }
 
 // Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() {
-  std::vector<std::string> active_jiffies = CpuUtilization();
+  std::vector<std::string> jiffies = CpuUtilization();
+  long total_jiffies = 0;
 
-  return 0; // stol(active_jiffies.at(CPUStates::kIdle_)) +
-            // stol(active_jiffies.at(CPUStates::kIOwait_));
+  if (CPUStates::kIdle_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kIdle_).begin(),
+                  jiffies.at(CPUStates::kIdle_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kIdle_));
+  }
+  if (CPUStates::kIOwait_ < jiffies.size() &&
+      std::all_of(jiffies.at(CPUStates::kIOwait_).begin(),
+                  jiffies.at(CPUStates::kIOwait_).end(), isdigit)) {
+    total_jiffies += stol(jiffies.at(CPUStates::kIOwait_));
+  }
+
+  return total_jiffies / sysconf(_SC_CLK_TCK);
 }
 
 // Read and return the total number of processes
@@ -252,10 +294,10 @@ std::string LinuxParser::Uid(int pid) {
 // Read and return the user associated with a process
 std::string LinuxParser::User(int pid) {
   std::string line, username, key, value;
-  std::ifstream filestream(kProcDirectory + std::to_string(pid) +
-                           kPasswordPath);
+  std::ifstream filestream(kPasswordPath);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       while (linestream >> username >> value >> key) {
         if (key == Uid(pid)) {
@@ -264,24 +306,22 @@ std::string LinuxParser::User(int pid) {
       }
     }
   }
-  return username;
+  return std::string();
 }
 
 // Read and return the uptime of a process
 long LinuxParser::UpTime(int pid) {
-  std::string line;
-  long value;
-  std::vector<long> key(22);
+  std::string line, value;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) +
-                           kPasswordPath);
+                           kStatFilename);
+
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
-      while (linestream >> value) {
-        key.emplace_back(value);
+      for (int i = 0; i < 22; i++) {
+        linestream >> value;
       }
     }
   }
-
-  return key.at(21);
+  return stol(value) / sysconf(_SC_CLK_TCK);
 }

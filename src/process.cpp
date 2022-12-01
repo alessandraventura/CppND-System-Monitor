@@ -7,14 +7,17 @@
 #include "linux_parser.h"
 #include "process.h"
 
-using std::to_string;
+// Return this process' ID
+int Process::Pid() {
+  return 0; // pid_;
+}
 
-// TODO: Return this process's ID
-int Process::Pid() { return pid_; }
+// Set this process' ID
+void Process::Pid(int pid) { pid_ = pid; }
 
 // Return this process's CPU utilization
 float Process::CpuUtilization() {
-  return LinuxParser::ActiveJiffies(pid_) / LinuxParser::Jiffies();
+  return 0; // LinuxParser::ActiveJiffies(pid_) / LinuxParser::Jiffies();
 }
 
 // Return the command that generated this process
@@ -32,8 +35,8 @@ std::string Process::User() {
 // Return the age of this process (in seconds)
 long int Process::UpTime() { return LinuxParser::UpTime(pid_); }
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
+// Overload the "less than" comparison operator for Process objects
 bool Process::operator<(Process const &a [[maybe_unused]]) const {
-  return true;
+
+  return false; //(a.pid_ < this->pid_) ? true : false;
 }

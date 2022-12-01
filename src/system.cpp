@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <iostream>
 #include <set>
 #include <string>
 #include <unistd.h>
@@ -11,18 +12,22 @@
 
 using std::set;
 using std::size_t;
-/*You need to complete the mentioned TODOs in order to satisfy the rubric
-criteria "The student will be able to extract and display basic data about the
-system."
-
+/*
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
 
 // Return the system's CPU
 Processor &System::Cpu() { return cpu_; }
 
-// TODO: Return a container composed of the system's processes
-std::vector<Process> &System::Processes() { return processes_; }
+// Return a container composed of the system's processes
+std::vector<Process> &System::Processes() {
+  // auto pids = LinuxParser::Pids();
+  // for (int i = 0; i < pids.size(); i++) {
+  //   // std::cout << i << std::endl;
+  //   // processes_.emplace_back(Process(i));
+  // }
+  return processes_;
+}
 
 // Return the system's kernel identifier (string)
 std::string System::Kernel() { return LinuxParser::Kernel(); }

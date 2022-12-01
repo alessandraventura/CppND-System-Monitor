@@ -122,7 +122,7 @@ std::vector<std::string> LinuxParser::CpuUtilization() {
 // Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return ActiveJiffies() + IdleJiffies(); }
 
-// QUESTION: Read and return the number of active jiffies for a PID
+// Read and return the number of active jiffies for a PID
 long LinuxParser::ActiveJiffies(int pid) {
   std::string line;
   std::vector<long> key;
@@ -148,20 +148,20 @@ long LinuxParser::ActiveJiffies(int pid) {
 long LinuxParser::ActiveJiffies() {
   std::vector<std::string> active_jiffies = CpuUtilization();
 
-  return stol(active_jiffies.at(CPUStates::kUser_)) +
-         stol(active_jiffies.at(CPUStates::kNice_)) +
-         stol(active_jiffies.at(CPUStates::kSystem_)) +
-         stol(active_jiffies.at(CPUStates::kIRQ_)) +
-         stol(active_jiffies.at(CPUStates::kSoftIRQ_)) +
-         stol(active_jiffies.at(CPUStates::kSteal_));
+  return 0; // stol(active_jiffies.at(CPUStates::kUser_)) +
+            // stol(active_jiffies.at(CPUStates::kNice_)) +
+            // stol(active_jiffies.at(CPUStates::kSystem_)) +
+            // stol(active_jiffies.at(CPUStates::kIRQ_)) +
+            // stol(active_jiffies.at(CPUStates::kSoftIRQ_)) +
+            // stol(active_jiffies.at(CPUStates::kSteal_));
 }
 
 // Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() {
   std::vector<std::string> active_jiffies = CpuUtilization();
 
-  return stol(active_jiffies.at(CPUStates::kIdle_)) +
-         stol(active_jiffies.at(CPUStates::kIOwait_));
+  return 0; // stol(active_jiffies.at(CPUStates::kIdle_)) +
+            // stol(active_jiffies.at(CPUStates::kIOwait_));
 }
 
 // Read and return the total number of processes

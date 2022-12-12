@@ -52,7 +52,7 @@ std::vector<int> LinuxParser::Pids() {
     std::string filename = dir_entry.path().filename();
     if (std::all_of(filename.begin(), filename.end(), isdigit)){
       int pid = stoi(filename);
-      pids.push_back(pid);
+      pids.emplace_back(pid);
     }
   }
   return pids;

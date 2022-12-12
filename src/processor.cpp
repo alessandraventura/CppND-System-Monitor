@@ -6,6 +6,6 @@ float Processor::Utilization() {
   float jiffies = float(LinuxParser::Jiffies());
   if (jiffies != 0) {
     return (active_jiffies / jiffies);
-  } else
-    return 0;
+  }
+  return 0;
 }

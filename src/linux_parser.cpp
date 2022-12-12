@@ -7,6 +7,7 @@
 #include "linux_parser.h"
 
 #include <iostream>
+#include <filesystem>
 
 // Reading the Operating System name from the filesystem
 std::string LinuxParser::OperatingSystem() {
@@ -44,23 +45,16 @@ std::string LinuxParser::Kernel() {
   return kernel;
 }
 
-// BONUS: Update this to use std::filesystem
 std::vector<int> LinuxParser::Pids() {
+  const std::filesystem::path proc_dir{kProcDirectory};
   std::vector<int> pids;
-  DIR *directory = opendir(kProcDirectory.c_str());
-  struct dirent *file;
-  while ((file = readdir(directory)) != nullptr) {
-    // Is this a directory?
-    if (file->d_type == DT_DIR) {
-      // Is every character of the name a digit?
-      std::string filename(file->d_name);
-      if (std::all_of(filename.begin(), filename.end(), isdigit)) {
-        int pid = stoi(filename);
-        pids.push_back(pid);
-      }
+  for (auto const &dir_entry : std::filesystem::directory_iterator{proc_dir}){
+    std::string filename = dir_entry.path().filename();
+    if (std::all_of(filename.begin(), filename.end(), isdigit)){
+      int pid = stoi(filename);
+      pids.push_back(pid);
     }
   }
-  closedir(directory);
   return pids;
 }
 

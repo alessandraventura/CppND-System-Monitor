@@ -23,9 +23,11 @@ Processor &System::Cpu() { return cpu_; }
 // Return a container composed of the system's processes
 std::vector<Process> &System::Processes() {
   auto pids = LinuxParser::Pids();
+  processes_.clear();
   for (auto &i : pids) {
     processes_.emplace_back(Process(i));
   }
+  std::sort(processes_.begin(), processes_.end());
   return processes_;
 }
 

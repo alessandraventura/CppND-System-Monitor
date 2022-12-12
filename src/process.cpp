@@ -13,8 +13,7 @@ int Process::Pid() { return pid_; }
 // Return this process's CPU utilization
 float Process::CpuUtilization() const {
   float active_jiffies = float(LinuxParser::ActiveJiffies(pid_));
-  float jiffies = float(LinuxParser::Jiffies());
-
+  float jiffies = float(LinuxParser::UpTime() - LinuxParser::UpTime(pid_));
   if (jiffies != 0) {
     return (active_jiffies / jiffies);
   }

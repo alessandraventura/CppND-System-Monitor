@@ -1,13 +1,13 @@
-#include <dirent.h>
-#include <sstream>
-#include <string>
-#include <unistd.h>
-#include <vector>
-
 #include "linux_parser.h"
 
-#include <iostream>
+#include <dirent.h>
+#include <unistd.h>
+
 #include <filesystem>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 // Reading the Operating System name from the filesystem
 std::string LinuxParser::OperatingSystem() {
@@ -48,9 +48,9 @@ std::string LinuxParser::Kernel() {
 std::vector<int> LinuxParser::Pids() {
   const std::filesystem::path proc_dir{kProcDirectory};
   std::vector<int> pids;
-  for (auto const &dir_entry : std::filesystem::directory_iterator{proc_dir}){
+  for (auto const &dir_entry : std::filesystem::directory_iterator{proc_dir}) {
     std::string filename = dir_entry.path().filename();
-    if (std::all_of(filename.begin(), filename.end(), isdigit)){
+    if (std::all_of(filename.begin(), filename.end(), isdigit)) {
       int pid = stoi(filename);
       pids.emplace_back(pid);
     }
@@ -224,7 +224,7 @@ int LinuxParser::RunningProcesses() {
   std::string line;
   std::string key;
   int value = 0;
-  std::ifstream filestream(kProcDirectory + kMeminfoFilename);
+  std::ifstream filestream(kProcDirectory + kStatFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);

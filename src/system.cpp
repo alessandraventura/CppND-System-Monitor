@@ -1,14 +1,16 @@
+#include "system.h"
+
+#include <unistd.h>
+
 #include <cstddef>
+#include <iostream>
 #include <set>
 #include <string>
-#include <unistd.h>
 #include <vector>
 
 #include "linux_parser.h"
 #include "process.h"
 #include "processor.h"
-#include "system.h"
-#include <iostream>
 
 // Return the system's CPU
 Processor &System::Cpu() { return cpu_; }
@@ -17,8 +19,8 @@ Processor &System::Cpu() { return cpu_; }
 std::vector<Process> &System::Processes() {
   auto pids = LinuxParser::Pids();
   processes_.clear();
-  for (auto &i : pids) {
-    processes_.emplace_back(Process(i));
+  for (const int &pid : pids) {
+    processes_.emplace_back(pid);
   }
   std::sort(processes_.begin(), processes_.end());
   return processes_;

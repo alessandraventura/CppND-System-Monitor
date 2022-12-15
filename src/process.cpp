@@ -1,11 +1,12 @@
+#include "process.h"
+
+#include <unistd.h>
+
 #include <cctype>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <unistd.h>
 #include <vector>
-
-#include "process.h"
 
 // Return this process's ID
 int Process::Pid() { return pid_; }
@@ -21,7 +22,16 @@ float Process::CpuUtilization() const {
 }
 
 // Return the command that generated this process
-std::string Process::Command() { return LinuxParser::Command(pid_); }
+std::string Process::Command() {
+  std::string command = LinuxParser::Command(pid_);
+
+  if (command.size() > 40) {
+    command.erase(command.begin() + 40, command.end());
+    command += "...";
+  }
+
+  return command;
+}
 
 // Return this process's memory utilization
 std::string Process::Ram() { return LinuxParser::Ram(pid_); }

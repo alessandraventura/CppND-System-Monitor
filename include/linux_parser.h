@@ -18,6 +18,12 @@ const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
+// Functional operations
+template <typename T>
+T findValueByKey(std::string const &keyFilter, std::string const &filename);
+template <typename T>
+T getValueOfFile(std::string const &filename);
+
 // System
 float MemoryUtilization();
 long UpTime();
@@ -52,6 +58,6 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
-}; // namespace LinuxParser
+};  // namespace LinuxParser
 
 #endif

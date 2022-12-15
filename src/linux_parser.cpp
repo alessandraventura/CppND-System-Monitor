@@ -63,6 +63,7 @@ std::string LinuxParser::OperatingSystem() {
       }
     }
   }
+  filestream.close();
   return value;
 }
 
@@ -112,6 +113,7 @@ long LinuxParser::UpTime() {
       linestream >> uptime;
     }
   }
+  filestream.close();
   return uptime;
 }
 
@@ -251,6 +253,7 @@ std::string LinuxParser::Ram(int pid) {
       }
     }
   }
+  filestream.close();
   return value;
 }
 
@@ -275,6 +278,7 @@ std::string LinuxParser::User(int pid) {
       }
     }
   }
+  filestream.close();
   return std::string();
 }
 
@@ -292,5 +296,6 @@ long LinuxParser::UpTime(int pid) {
       }
     }
   }
+  filestream.close();
   return stol(value) / sysconf(_SC_CLK_TCK);
 }

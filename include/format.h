@@ -4,7 +4,8 @@
 #include <string>
 
 namespace Format {
+std::string TwoDigits(int n);
 std::string ElapsedTime(long times);
-}; // namespace Format
+};  // namespace Format
 
 #endif

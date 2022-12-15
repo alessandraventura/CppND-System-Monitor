@@ -18,6 +18,16 @@ const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
+// Constant variables
+const std::string filterProcesses("processes");
+const std::string filterRunningProcesses("procs_running");
+const std::string filterMemTotalString("MemTotal:");
+const std::string filterMemFreeString("MemFree:");
+const std::string filterMemAvailableString("MemAvailable:");
+const std::string filterUID("Uid:");
+const std::string filterProcMem(
+    "VmRSS:");  // Using VmRSS because considering physical RAM
+
 // Functional operations
 template <typename T>
 T findValueByKey(std::string const &keyFilter, std::string const &filename);

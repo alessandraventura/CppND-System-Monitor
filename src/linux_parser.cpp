@@ -26,6 +26,7 @@ T LinuxParser::findValueByKey(std::string const &keyFilter,
       }
     }
   }
+  stream.close();
   return value;
 };
 
@@ -95,10 +96,11 @@ std::vector<int> LinuxParser::Pids() {
 
 // Read and return the system memory utilization
 float LinuxParser::MemoryUtilization() {
-  float mem_total = findValueByKey<float>("MemTotal:", kMeminfoFilename);
-  float mem_free = findValueByKey<float>("MemFree:", kMeminfoFilename);
+  float mem_total =
+      findValueByKey<float>(filterMemTotalString, kMeminfoFilename);
+  float mem_free = findValueByKey<float>(filterMemFreeString, kMeminfoFilename);
   float mem_available =
-      findValueByKey<float>("MemAvailable:", kMeminfoFilename);
+      findValueByKey<float>(filterMemAvailableString, kMeminfoFilename);
   return (mem_total - mem_free) / mem_available;
 }
 
@@ -224,12 +226,12 @@ long LinuxParser::IdleJiffies() {
 
 // Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
-  return findValueByKey<int>("processes", kStatFilename);
+  return findValueByKey<int>(filterProcesses, kStatFilename);
 }
 
 // Read and return the number of running processes
 int LinuxParser::RunningProcesses() {
-  return findValueByKey<int>("procs_running", kStatFilename);
+  return findValueByKey<int>(filterRunningProcesses, kStatFilename);
 }
 
 // Read and return the command associated with a process
@@ -247,7 +249,7 @@ std::string LinuxParser::Ram(int pid) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key >> value >> unit) {
-        if (key == "VmRSS:") {  // Using VmRSS because considering physical RAM
+        if (key == filterProcMem) {
           return std::to_string(stol(value) / 1024);
         }
       }
@@ -259,7 +261,7 @@ std::string LinuxParser::Ram(int pid) {
 
 // Read and return the user ID associated with a process
 std::string LinuxParser::Uid(int pid) {
-  return findValueByKey<std::string>("Uid:",
+  return findValueByKey<std::string>(filterUID,
                                      std::to_string(pid) + kStatusFilename);
 }
 
